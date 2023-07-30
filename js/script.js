@@ -1,6 +1,7 @@
 const canvas = document.querySelector('canvas'),
     toolBtns = document.querySelectorAll('.tool'),
-    fillColor = document.querySelector('#fill-color')
+    fillColor = document.querySelector('#fill-color'),
+    sizeSlider = document.querySelector('#size-slider')
 
 let ctx = canvas.getContext('2d'),
     isDrawing = false,
@@ -22,7 +23,6 @@ const startDraw = (e) => {
     ctx.beginPath()
     ctx.lineWidth = brushWidth
     snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    console.log(snapshot)
 }
 
 const drawRectangle = e => {
@@ -35,6 +35,15 @@ const drawCircle = e => {
     ctx.beginPath()
     const radius = Math.sqrt(Math.pow(prevMouseX - e.offsetX, 2) + Math.pow(prevMouseY - e.offsetY, 2))
     ctx.arc(prevMouseX, prevMouseY, radius, 0, 2 * Math.PI)
+    fillColor.checked ? ctx.fill() : ctx.stroke()
+}
+
+const drawTriangle = e => {
+    ctx.beginPath()
+    ctx.moveTo(prevMouseX, prevMouseY)
+    ctx.lineTo(e.offsetX, e.offsetY)
+    ctx.lineTo(prevMouseX * 2 - e.offsetX, e.offsetY)
+    ctx.closePath()
     fillColor.checked ? ctx.fill() : ctx.stroke()
 }
 
@@ -53,6 +62,9 @@ const drawing = e => {
         case 'circle':
             drawCircle(e)
             break
+        case 'triangle':
+            drawTriangle(e)
+            break
         default:
             break
     }
@@ -70,6 +82,8 @@ toolBtns.forEach(btn => {
 const stopDraw = () => {
     isDrawing = false
 }
+
+sizeSlider.addEventListener('change', () => brushWidth = sizeSlider.value)
 
 canvas.addEventListener('mousedown', startDraw)
 canvas.addEventListener('mousemove', drawing)
