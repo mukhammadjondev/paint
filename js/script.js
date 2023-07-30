@@ -1,12 +1,15 @@
 const canvas = document.querySelector('canvas'),
     toolBtns = document.querySelectorAll('.tool'),
     fillColor = document.querySelector('#fill-color'),
-    sizeSlider = document.querySelector('#size-slider')
+    sizeSlider = document.querySelector('#size-slider'),
+    colorBtns = document.querySelectorAll('.colors .option'),
+    colorPicker = document.querySelector('#color-picker')
 
 let ctx = canvas.getContext('2d'),
     isDrawing = false,
     brushWidth = 5,
     selectedTool = 'brush',
+    selectedColor = '#000',
     prevMouseX,
     prevMouseY,
     snapshot
@@ -23,6 +26,8 @@ const startDraw = (e) => {
     ctx.beginPath()
     ctx.lineWidth = brushWidth
     snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    ctx.strokeStyle = selectedColor
+    ctx.fillStyle = selectedColor
 }
 
 const drawRectangle = e => {
@@ -65,6 +70,11 @@ const drawing = e => {
         case 'triangle':
             drawTriangle(e)
             break
+        case 'eraser':
+            ctx.strokeStyle = '#fff'
+            ctx.lineTo(e.offsetX, e.offsetY)
+            ctx.stroke()
+            break
         default:
             break
     }
@@ -75,8 +85,21 @@ toolBtns.forEach(btn => {
         document.querySelector('.options .active').classList.remove('active')
         btn.classList.add('active')
         selectedTool = btn.id
-        console.log(selectedTool)
     })
+})
+
+colorBtns.forEach(btn => {
+    btn.addEventListener('click', e => {
+        document.querySelector('.options .selected').classList.remove('selected')
+        btn.classList.add('selected')
+        const bgColor = window.getComputedStyle(btn).getPropertyValue('background-color')
+        selectedColor = bgColor
+    })
+})
+
+colorPicker.addEventListener('change', ()=> {
+    colorPicker.parentElement.style.background = colorPicker.value
+    colorPicker.parentElement.click()
 })
 
 const stopDraw = () => {
