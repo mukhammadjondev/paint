@@ -3,7 +3,9 @@ const canvas = document.querySelector('canvas'),
     fillColor = document.querySelector('#fill-color'),
     sizeSlider = document.querySelector('#size-slider'),
     colorBtns = document.querySelectorAll('.colors .option'),
-    colorPicker = document.querySelector('#color-picker')
+    colorPicker = document.querySelector('#color-picker'),
+    clearCanvasBtn = document.querySelector('.clear-canvas')
+    saveImageBtn = document.querySelector('.save-image')
 
 let ctx = canvas.getContext('2d'),
     isDrawing = false,
@@ -14,9 +16,16 @@ let ctx = canvas.getContext('2d'),
     prevMouseY,
     snapshot
 
+const setCanvasBackground = () => {
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = selectedColor
+}
+
 window.addEventListener('load', ()=> {
     canvas.width = canvas.offsetWidth
     canvas.height = canvas.offsetHeight
+    setCanvasBackground()
 })
 
 const startDraw = (e) => {
@@ -105,6 +114,16 @@ colorPicker.addEventListener('change', ()=> {
 const stopDraw = () => {
     isDrawing = false
 }
+
+clearCanvasBtn.addEventListener('click', ()=> ctx.clearRect(0, 0, canvas.width, canvas.height))
+
+saveImageBtn.addEventListener('click', ()=> {
+    const link = document.createElement('a')
+    link.download = `Paint${Date.now()}.jpg`
+    link.href = canvas.toDataURL()
+    link.click()
+    setCanvasBackground()
+})
 
 sizeSlider.addEventListener('change', () => brushWidth = sizeSlider.value)
 
